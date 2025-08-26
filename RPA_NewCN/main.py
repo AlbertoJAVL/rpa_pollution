@@ -1,6 +1,7 @@
 from ApiCyberHubOrdenes import get_orden_servicio, ajusteCerrado
 from os import environ, path, remove, listdir, system
 from funcionalidad import generacionCN
+from tele import send_msg
 from shutil import rmtree
 from logueo import login
 from time import sleep
@@ -168,7 +169,9 @@ def workflow():
                     ##### Se Inicia la sesion para cuando resulto un usuario distinto
                     driver, status_logue, status_actualizacion = login(usuario, password)
                     if status_logue == False:
-                        if 'Claves Invalidas' in status_actualizacion: response = ajusteCerrado(id, '-', f'Error: {status_actualizacion}')
+                        if 'Claves Invalidas' in status_actualizacion: 
+                            response = ajusteCerrado(id, '-', f'Error: {status_actualizacion}')
+                            send_msg(f'ERROR Claves Invalidad Cuenta: {cuenta} Usuario: {usuario} Password: {password}')
                         else: response = ajusteCerrado(id, '-', 'Generado')
                         print(response)
                         ultimo_usuario = None
@@ -216,6 +219,7 @@ def workflow():
                 if resultado == False:
                     response = ajusteCerrado(id, '-', cnGenerado)
                     print(response)
+                    send_msg(f'ERROR: {cnGenerado}\nCuenta: {cuenta}')
                     driver.close()
                     driver.quit()
                     ultimo_usuario = None

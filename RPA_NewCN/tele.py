@@ -37,7 +37,7 @@ def send_msg(error):
     IST = pytz.timezone('America/Mexico_City')
     raw_TS = datetime.now(IST)
     msg = f"Rpa: {IP_ADDR} Info:{error}"
-    telegram_api=f"https://api.telegram.org/bot8426416631:AAEDYPkcuN3sRoyOAbFIYFeWhxt6gINTvrE/sendMessage?chat_id=-4875348290&text={msg}"
+    telegram_api = f"https://api.telegram.org/bot8426416631:AAEDYPkcuN3sRoyOAbFIYFeWhxt6gINTvrE/sendMessage?chat_id=-4843960504&text={msg}"
     tel_resp = requests.get(telegram_api)
     print(tel_resp.status_code)
     if tel_resp.status_code == 200:
@@ -106,4 +106,4 @@ def main() -> None:
 #         main()
 #     except KeyboardInterrupt:
 #         send_msg("⏹️  Watch-dog detenido manualmente")
-send_msg("⏹️  Watch-dog detenido manualmente")
+# send_msg("⏹️ Prueba pollution")
