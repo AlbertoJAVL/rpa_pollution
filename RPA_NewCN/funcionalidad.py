@@ -28,11 +28,16 @@ def cargandoElemento(driver, elemento, atributo, valorAtributo, path = False, va
                 or 'El caso de negocio tiene los siguientes campos requeridos sin completar:' in alert_txt
                 or 'Es necesario actualizar' in alert_txt
                 or 'campo Referido no esta permitido' in alert_txt
-                or 'No se ha recibido el certificado' in alert_txt): 
+                or 'No se ha recibido el certificado' in alert_txt
+                or 'FALLA GENERAL' in alert_txt.upper()): 
                 alert.accept()
                 print('Alert Cerrado')
 
                 if 'No se ha recibido el certificado' in alert_txt: return False, 'Error Certificado Wifi'
+            elif 'Esta tipificación requiere un Motivo de Cliente válido' in alert_txt: 
+                alert.accept()
+                print('Alert Cerrado')
+                return False, 'Error Agregar motivo cliente'
             else: return False, f'Inconsistencia Siebel: {alert_txt}'
         
         except:
@@ -511,7 +516,7 @@ def cierreOS(driver, os, tipoOrden, respuestaEncuesta):
         return False, 'FCierreOS'
     
 
-def generacionCN(driver, cuenta, categoria, motivo, submotivo, solucion, comentario):
+def generacionCN(driver, cuenta, categoria, motivo, submotivo, solucion, comentario, motivoCliente):
 
     try:
 
@@ -525,11 +530,11 @@ def generacionCN(driver, cuenta, categoria, motivo, submotivo, solucion, comenta
 
         # Pantalla Cuentas (Click)
         lupa_busqueda_cuenta, resultadoCarga = cargandoElemento(driver, 'a', 'title', 'Cuentas')
-        if lupa_busqueda_cuenta == False: return False, 'Pendiente'
+        if lupa_busqueda_cuenta == False: return False, 'Generado'
         
         # Buscando Elemento
         lupa_busqueda_cuenta, resultadoCarga = cargandoElemento(driver, 'button', 'title', 'Cuentas Applet de lista:Consulta')
-        if lupa_busqueda_cuenta == False: return False, 'Pendiente'
+        if lupa_busqueda_cuenta == False: return False, 'Generado'
         sleep(5)
 
         # Busqueda Columna Cuenta
@@ -539,7 +544,7 @@ def generacionCN(driver, cuenta, categoria, motivo, submotivo, solucion, comenta
         # Ingreso Cuenta
         # input_busqueda_cuenta = driver.find_element(By.XPATH, pathInputBusCuenta.replace('{contador}', posicionCuenta)).click()
         lupa_busqueda_cuenta, resultadoCarga = cargandoElemento(driver, '','','', pathInputBusCuenta.replace('{contador}', posicionCuenta))
-        if lupa_busqueda_cuenta == False: return False, 'Pendiente'
+        if lupa_busqueda_cuenta == False: return False, 'Generado'
         sleep(1)
 
         try: input_busqueda_cuenta = driver.find_element(By.XPATH, pathInputBusCuenta.replace('{contador}', posicionCuenta) + '/input[2]')
@@ -555,14 +560,14 @@ def generacionCN(driver, cuenta, categoria, motivo, submotivo, solucion, comenta
         lupa_busqueda_cuenta, resultadoCarga = cargandoElemento(driver, '', '', '', f'//a[contains(text(), "{cuenta}")]')
         if lupa_busqueda_cuenta == False: 
             if 'Inconsistencia' in resultadoCarga: return False, resultadoCarga
-            else: return False, 'Pendiente'
+            else: return False, 'Generado'
         print('♥ Cargando cuenta OK! ♥')
         sleep(5)
 
         lupa_busqueda_cuenta, resultadoCarga = cargandoElemento(driver, 'input', 'aria-label', 'Cliente Desde')
         if lupa_busqueda_cuenta == False: 
             if 'Inconsistencia' in resultadoCarga: return False, resultadoCarga
-            else: return False, 'Pendiente'
+            else: return False, 'Generado'
         print('♥ Cuenta OK! ♥')
         sleep(10)
 
@@ -572,13 +577,13 @@ def generacionCN(driver, cuenta, categoria, motivo, submotivo, solucion, comenta
         lupa_busqueda_cuenta, resultadoCarga = cargandoElemento(driver, 'button', 'title', 'Casos de negocio Applet de lista:Nuevo')
         if lupa_busqueda_cuenta == False: 
             if 'Inconsistencia' in resultadoCarga: return False, resultadoCarga
-            else: return False, 'Pendiente'
+            else: return False, 'Generado'
         
         print('Validando aparicion formulario')
         lupa_busqueda_cuenta, resultadoCarga = cargandoElemento(driver, 'input', 'aria-label', 'Cliente Desde')
         if lupa_busqueda_cuenta == False: 
             if 'Inconsistencia' in resultadoCarga: return False, resultadoCarga
-            else: return False, 'Pendiente'
+            else: return False, 'Generado'
 
         sleep(5)
         print('Leyendo encabezados')
@@ -600,6 +605,10 @@ def generacionCN(driver, cuenta, categoria, motivo, submotivo, solucion, comenta
         
         posicionComentarios = obtencionColumna(driver, 'Comentarios', pathColumnasGenCN)
         if posicionComentarios == False: return False, 'Error Estructura Elemento'
+
+        if 'SIN MOTIVO' not in motivoCliente.upper():
+            posicionMotivoCliente = obtencionColumna(driver, 'Motivo Cliente', pathColumnasGenCN)
+            if posicionMotivoCliente == False: return False, 'Error Estructura Elemento'
 
 
         # Busqueda Campo Categoria
@@ -668,6 +677,22 @@ def generacionCN(driver, cuenta, categoria, motivo, submotivo, solucion, comenta
         input_comentario.send_keys(comentario)
         print('♦ Comentario Ingresado ♦')
 
+        # Busqueda Campo Motivo Cliente
+        if 'SIN MOTIVO' not in motivoCliente.upper():
+            lupa_busqueda_cuenta, resultadoCarga = cargandoElemento(driver, '','','',pathInputGenCN.replace('{contador}', posicionMotivoCliente))
+            if lupa_busqueda_cuenta == False: return False, resultadoCarga
+            
+            # driver.find_element(By.XPATH, pathInputGenCN.replace('{contador}', posicionSolucion)).click()
+            try: input_motivo_cliente = driver.find_element(By.XPATH, pathInputGenCN.replace('{contador}', posicionMotivoCliente) + '/input[2]')
+            except: 
+                try: input_motivo_cliente = driver.find_element(By.XPATH, pathInputGenCN.replace('{contador}', posicionMotivoCliente) + '/input')
+                except: return False, 'Error Estructura Elemento'
+
+            input_motivo_cliente.send_keys(motivoCliente)
+            input_motivo_cliente.send_keys(Keys.RETURN)
+            print('♦ Motivo Cliente Ingresado ♦')
+            sleep(20)
+
         noCN = driver.find_element(By.XPATH, pathInputGenCN.replace('{contador}', posicionCNGenerado) + '/a')
         noCN = noCN.text
         print(f'♦ CN Generado: {noCN} ♦')
@@ -677,21 +702,24 @@ def generacionCN(driver, cuenta, categoria, motivo, submotivo, solucion, comenta
 
         print('→ Cargando Pantalla CN ←')
         resultado, resultadoCarga = cargandoElemento(driver, 'input', 'aria-label', 'Motivo del cierre', valContador=35)
-        if resultado == False: 
-            driver.back()
-            lupa_busqueda_cuenta, resultadoCarga = cargandoElemento(driver, 'input', 'aria-label', 'Cliente Desde')
-            if lupa_busqueda_cuenta == False: return False, resultadoCarga
+        if resultado == False:
 
-            driver.forward()
-            resultado, resultadoCarga = cargandoElemento(driver, 'input', 'aria-label', 'Motivo del cierre', valContador=35)
-            if resultado == False: 
-                return False, resultadoCarga
+            if 'Inconsistencia Siebel' in resultadoCarga or 'Error' in resultadoCarga: return False, resultadoCarga
+            else:
+                driver.back()
+                lupa_busqueda_cuenta, resultadoCarga = cargandoElemento(driver, 'input', 'aria-label', 'Cliente Desde')
+                if lupa_busqueda_cuenta == False: return False, resultadoCarga
+
+                driver.forward()
+                resultado, resultadoCarga = cargandoElemento(driver, 'input', 'aria-label', 'Motivo del cierre', valContador=35)
+                if resultado == False: 
+                    return False, resultadoCarga
             
         # Busqueda Campo Motivo Cierre
-        # driver.find_element(By.XPATH, "//input[@aria-label='Motivo del cierre']").click()
-        # input_motivo_cierre = driver.find_element(By.XPATH, "//input[@aria-label='Motivo del cierre']")
-        # input_motivo_cierre.send_keys("CIERRE ADMINISTRATIVO")
-        # print('♦ Campo Motivo Cierre ♦')
+        driver.find_element(By.XPATH, "//input[@aria-label='Motivo del cierre']").click()
+        input_motivo_cierre = driver.find_element(By.XPATH, "//input[@aria-label='Motivo del cierre']")
+        input_motivo_cierre.send_keys("RAC INFORMA Y SOLUCIONA")
+        print('♦ Campo Motivo Cierre ♦')
 
         # Busqueda Campo Estado
         driver.find_element(By.XPATH, "//input[@aria-label='Estado']").click()

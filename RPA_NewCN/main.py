@@ -7,6 +7,7 @@ from time import sleep
 
 import socket
 import re
+import os
 
 # datos = [
 #     {
@@ -51,7 +52,8 @@ import re
 # def loginprueba(usuario, password):
 #     print(f'sesion iniciada con usuario: {usuario}')
 
-# ultimo_usuario = None
+ultimo_usuario = None
+driver = None
 
 # def main(datos):
 
@@ -107,35 +109,41 @@ def delTemporales():
 def workflow():
     try:
         # Se instancia el usuario global sobre el que se estara validando la sesion anterior
-        global ultimo_usuario
+        global ultimo_usuario, driver
 
         while True:
             # Eliminacion de Temporales
             delTemporales()
 
             ## Llamada al servicio para validar si existen cuentas
-            apiResponse = get_orden_servicio()
+            apiResponse2 = get_orden_servicio()
 
             host = socket.gethostname()
             ip = socket.gethostbyname(host)
 
             
-
+            print(apiResponse2)
             
 
             ### Si existen cuentas empieza proceso de validacion de sesion anterior 
-            if info != 'SIN INFO':
+            try:
 
                 print(f'🔴 Usuario de la sesion actual: {ultimo_usuario}')
-                print(info)
+                print(apiResponse2)
 
                 #### Se instancian los valores
-                datosProceso = apiResponse['cuenta']
+                datosProceso = apiResponse2['cuenta']
                 usuario      = datosProceso['usuario']
                 password     = datosProceso['pass']
                 cuenta       = datosProceso['cuenta']
                 id           = datosProceso['id']
                 plantillaCN  = datosProceso['casoNegocio']
+                print('################################################################')
+                plantillaCN  = plantillaCN.replace('MOTIVO CLIENTE:', 'MOTIVOCLIENTE:')
+                plantillaCN  = plantillaCN.replace('Motivo Cliente:', 'MOTIVOCLIENTE:')
+                print(repr(plantillaCN))
+                sleep(10)
+
 
                 print(f"➡️ Procesando cuenta: {cuenta} con usuario: {usuario}")
 
@@ -158,11 +166,15 @@ def workflow():
                         system("taskkill /f /im chrome.exe")
 
                     ##### Se Inicia la sesion para cuando resulto un usuario distinto
-                    driver, status_logue = login(usuario, password)
+                    driver, status_logue, status_actualizacion = login(usuario, password)
                     if status_logue == False:
-                        response = ajusteCerrado(id, '-', 'Pendiente')
+                        if 'Claves Invalidas' in status_actualizacion: response = ajusteCerrado(id, '-', f'Error: {status_actualizacion}')
+                        else: response = ajusteCerrado(id, '-', 'Generado')
                         print(response)
                         ultimo_usuario = None
+                        driver = None
+                        driver.close()
+                        driver.quit()
                         return False
 
                     ##### Se actualiza el usuario en la sesion anterior
@@ -171,45 +183,77 @@ def workflow():
 
                 #### En caso de que sea el mismo usuario anterior
                 else: print("🟢 Reutilizando sesión actual de Chrome")
-
+                
                 #### Con la sesion iniciada se pasa a generar el CN
-                campos = ['CATEGORIA', 'MOTIVO', 'SUBMOTIVO', 'SOLUCION','COMENTARIO']
-                resultados = {}
+                texto = plantillaCN.replace('\r', '\n')
+                
+                # print(texto)
 
-                # Extraer cada campo con regex
-                for campo in campos:
-                    match = re.search(rf'{campo}:\s*(.+)', plantillaCN)
-                    resultados[campo] = match.group(1).strip() if match else ''
+                # 2) Campos a extraer
+                campos = ['CATEGORIA', 'MOTIVO', 'SUBMOTIVO', 'SOLUCION', 'MOTIVOCLIENTE', 'COMENTARIO']
 
-                # Mostrar resultados
-                for k, v in resultados.items():
-                    print(f'{k}: {v}')
+                # Patrón corregido sin \b problemático y con nombres de campo exactos
+                patron_todos = r'''(?m)(CATEGORIA|MOTIVO|SUBMOTIVO|SOLUCION|MOTIVOCLIENTE|COMENTARIO)\s*:\s*
+                                (?:
+                                    "([^"]*)"           # grupo 2: entre comillas
+                                    | \(([^)]*)\)       # grupo 3: entre paréntesis
+                                    | \*?([^\n]+?)      # grupo 4: suelto
+                                )
+                                \s*(?=\n|$)'''
+
+                matches = re.findall(patron_todos, texto, flags=re.IGNORECASE | re.VERBOSE)
+
+                resultados = {c: '' for c in campos}
+                for nombre, g1, g2, g3 in matches:
+                    valor = (g1 or g2 or g3 or '').strip()
+                    resultados[nombre.upper()] = valor
+
+                for k in campos:
+                    print(f'{k}: {resultados[k]}')
 
 
-                resultado, cnGenerado = generacionCN(driver, cuenta, resultados['CATEGORIA'], resultados['MOTIVO'], resultados['SUBMOTIVO'], resultados['SOLUCION'], resultados['COMENTARIO'])
+                resultado, cnGenerado = generacionCN(driver, cuenta, resultados['CATEGORIA'], resultados['MOTIVO'], resultados['SUBMOTIVO'], resultados['SOLUCION'], resultados['COMENTARIO'], resultados['MOTIVOCLIENTE'])
                 if resultado == False:
                     response = ajusteCerrado(id, '-', cnGenerado)
                     print(response)
                     driver.close()
                     driver.quit()
                     ultimo_usuario = None
+                    driver = None
+                    print(ultimo_usuario)
+                    sleep(10)
                     return False
                 else: 
                     response = ajusteCerrado(id, cnGenerado, 'Completado')
                     print(response)
-            else:
+            except Exception as e: 
                 ultimo_usuario = None
-                sleep(15)
+                driver = None
+                print(e)
+                return False
     
-    except: return False
+    except Exception as e: 
+        ultimo_usuario = None
+        driver = None
+        print(e)
+        return False
 
 while True == True:
 
+    print('#############################')
+    print('#############################')
+    print('#############################')
+
+    # os.system(f"taskkill /f /im chrome.exe")
+    # os.system(f"taskkill /f /im chrome.exe")
+    # os.system(f"taskkill /f /im chrome.exe")
+
     apiResponse = get_orden_servicio()
-    info = apiResponse[0]
     
-    if info != 'SIN INFO':
-        print('Agregar aqui el servicio de reprocesamiento')
+    
+    if apiResponse != 400:
+        id = apiResponse['cuenta']['id']
+        response = ajusteCerrado(id, '-', 'Generado')
 
         resultado = workflow()
         if resultado == False:
@@ -219,3 +263,4 @@ while True == True:
     else: 
         print('Esperando Cuentas ')
         sleep(10)
+        os.system('cls')

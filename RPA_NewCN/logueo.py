@@ -110,22 +110,22 @@ def login(usuario, contraseña):
                     print('CLAVES INVALIDAS')
                     driver.close()
                     driver.quit()
-                    return False, False
+                    return False, False, 'Claves Invalidas'
             except:
                 text_box(f'INICIO DE SESION EXITOSO: evazquezgu', '▬')
         else:
             text_box('NO SE PUDO ENCONTRAR LA PESTAÑA DE SIEBEL')
             driver.close()
             driver.quit()
-            return False, False
+            return False, False, ''
         
-        return driver, True
+        return driver, True, ''
     
     except Exception as e:
         description_error('02','login_siebel',e)
         driver.close()
         driver.quit()
-        return False, False
+        return False, False, ''
 
 
 

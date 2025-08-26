@@ -21,13 +21,16 @@ def get_orden_servicio():
             return reseponseApi
 
         elif response.status_code == 401:
-            return print("Unauthorized")
+            print("Unauthorized")
+            return 400
 
         elif response.status_code == 404:
-            return print("Not Found")
+            print("Not Found")
+            return 400
 
         elif response.status_code == 500:
-            return print("Internal Server Error")
+            print("Internal Server Error")
+            return 400
 
     except JSONDecodeError:
         return response.body_not_json
@@ -42,13 +45,16 @@ def update(datos, parametros):
             return responseApi
 
         elif response.status_code == 401:
-            return print("Unauthorized")
+            print("Unauthorized")
+            return 400
 
         elif response.status_code == 404:
-            return print("Not Found")
+            print("Not Found")
+            return 400
 
         elif response.status_code == 500:
-            return print("Internal Server Error")
+            print("Internal Server Error")
+            return 400
 
     except JSONDecodeError:
             return response.body_not_json
@@ -65,7 +71,7 @@ def ajusteCerrado(id, casoNegocioGenerado, status):
 
 
 # prueba = get_orden_servicio()
-# print(prueba)
+# print(prueba['cuenta']['id'])
 
-p = ajusteCerrado('4', '-', 'Pendiente')
-print(p)
+# p = ajusteCerrado('70', '-', 'Generado')
+# print(p)
