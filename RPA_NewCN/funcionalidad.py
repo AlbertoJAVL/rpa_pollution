@@ -693,12 +693,16 @@ def generacionCN(driver, cuenta, categoria, motivo, submotivo, solucion, comenta
             print('♦ Motivo Cliente Ingresado ♦')
             sleep(20)
 
-        noCN = driver.find_element(By.XPATH, pathInputGenCN.replace('{contador}', posicionCNGenerado) + '/a')
-        noCN = noCN.text
-        print(f'♦ CN Generado: {noCN} ♦')
+        try:
 
-        driver.find_element(By.XPATH, f'//a[contains(text(), "{noCN}")]').click()
-        print(f'♦ Acceso al CN: {noCN} OK!♦')
+            noCN = driver.find_element(By.XPATH, pathInputGenCN.replace('{contador}', posicionCNGenerado) + '/a')
+            noCN = noCN.text
+            print(f'♦ CN Generado: {noCN} ♦')
+
+            driver.find_element(By.XPATH, f'//a[contains(text(), "{noCN}")]').click()
+            print(f'♦ Acceso al CN: {noCN} OK!♦')
+
+        except: return False, 'Error Acceso CN'
 
         print('→ Cargando Pantalla CN ←')
         resultado, resultadoCarga = cargandoElemento(driver, 'input', 'aria-label', 'Motivo del cierre', valContador=35)
@@ -716,22 +720,28 @@ def generacionCN(driver, cuenta, categoria, motivo, submotivo, solucion, comenta
                     return False, resultadoCarga
             
         # Busqueda Campo Motivo Cierre
-        driver.find_element(By.XPATH, "//input[@aria-label='Motivo del cierre']").click()
-        input_motivo_cierre = driver.find_element(By.XPATH, "//input[@aria-label='Motivo del cierre']")
-        input_motivo_cierre.send_keys("RAC INFORMA Y SOLUCIONA")
-        print('♦ Campo Motivo Cierre ♦')
+        try:
+            driver.find_element(By.XPATH, "//input[@aria-label='Motivo del cierre']").click()
+            input_motivo_cierre = driver.find_element(By.XPATH, "//input[@aria-label='Motivo del cierre']")
+            input_motivo_cierre.send_keys("RAC INFORMA Y SOLUCIONA")
+            print('♦ Campo Motivo Cierre ♦')
+        except: return False, 'Error Campo Motivo Cierre'
 
-        # Busqueda Campo Estado
-        driver.find_element(By.XPATH, "//input[@aria-label='Estado']").click()
-        # sleep(10000)
-        sleep(3)
-        driver.find_element(By.XPATH, "//span[@id='s_1_1_143_0_icon']").click()
-        sleep(3)
-        posicion = obtencionColumna(driver, 'Cerrado', pathEstado)
-        if posicion == False: return False, 'Error Pantalla NO Carga'
-        # sleep(10000)
-        driver.find_element(By.XPATH, pathEstado.replace('{contador}', posicion)).click()
-        print('♦ Campo Estado OK! ♦')
+        try:
+
+            # Busqueda Campo Estado
+            driver.find_element(By.XPATH, "//input[@aria-label='Estado']").click()
+            # sleep(10000)
+            sleep(3)
+            driver.find_element(By.XPATH, "//span[@id='s_1_1_143_0_icon']").click()
+            sleep(3)
+            posicion = obtencionColumna(driver, 'Cerrado', pathEstado)
+            if posicion == False: return False, 'Error Pantalla NO Carga'
+            # sleep(10000)
+            driver.find_element(By.XPATH, pathEstado.replace('{contador}', posicion)).click()
+            print('♦ Campo Estado OK! ♦')
+        
+        except: return False, 'Error Campo Estado'
 
         # driver.find_element(By.XPATH, "//button[@aria-label='Caso de negocio Applet de formulario:Guardar']").click()
         lupa_busqueda_cuenta, resultadoCarga = cargandoElemento(driver, 'button', 'aria-label', 'Caso de negocio Applet de formulario:Guardar')
@@ -742,5 +752,5 @@ def generacionCN(driver, cuenta, categoria, motivo, submotivo, solucion, comenta
 
     except Exception as e: 
         print(f'ERROR EN FUNCION INICIO. ERROR: {e}')
-        return False, 'Error FInicio'
+        return False, 'Generado'
   
