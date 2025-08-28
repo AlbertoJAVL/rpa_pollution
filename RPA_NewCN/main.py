@@ -214,12 +214,12 @@ def workflow():
                 for k in campos:
                     print(f'{k}: {resultados[k]}')
 
-                resultados['CATEGORIA'] = resultados['CATEGORIA'].replace('_', '').replace('-', '').replace(';', '').strip()
-                resultados['MOTIVO'] = resultados['MOTIVO'].replace('_', '').replace('-', '').replace(';', '').strip()
-                resultados['SUBMOTIVO'] = resultados['SUBMOTIVO'].replace('_', '').replace('-', '').replace(';', '').strip()
-                resultados['SOLUCION'] = resultados['SOLUCION'].replace('_', '').replace('-', '').replace(';', '').strip()
-                resultados['COMENTARIO'] = resultados['COMENTARIO'].replace('_', '').replace('-', '').replace(';', '').strip()
-                resultados['MOTIVOCLIENTE'] = resultados['MOTIVOCLIENTE'].replace('_', '').replace('-', '').replace(';', '').strip()
+                resultados['CATEGORIA'] = resultados['CATEGORIA'].replace('_', '').replace('-', '').replace(';', '').replace('"', '').strip()
+                resultados['MOTIVO'] = resultados['MOTIVO'].replace('_', '').replace('-', '').replace(';', '').replace('"', '').strip()
+                resultados['SUBMOTIVO'] = resultados['SUBMOTIVO'].replace('_', '').replace('-', '').replace(';', '').replace('"', '').strip()
+                resultados['SOLUCION'] = resultados['SOLUCION'].replace('_', '').replace('-', '').replace(';', '').replace('"', '').strip()
+                resultados['COMENTARIO'] = resultados['COMENTARIO'].replace('_', '').replace('-', '').replace(';', '').replace('"', '').strip()
+                resultados['MOTIVOCLIENTE'] = resultados['MOTIVOCLIENTE'].replace('_', '').replace('-', '').replace(';', '').replace('"', '').strip()
 
 
                 resultado, cnGenerado = generacionCN(driver, cuenta, resultados['CATEGORIA'], resultados['MOTIVO'], resultados['SUBMOTIVO'], resultados['SOLUCION'], resultados['COMENTARIO'], resultados['MOTIVOCLIENTE'])
