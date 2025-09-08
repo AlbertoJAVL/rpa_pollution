@@ -690,6 +690,9 @@ def generacionCN(driver, cuenta, categoria, motivo, submotivo, solucion, comenta
 
         # Busqueda Campo Motivo Cliente
         if 'SIN MOTIVO' not in motivoCliente.upper():
+            lupa_busqueda_cuenta, resultadoCarga = cargandoElemento(driver, '','','',pathInputGenCN.replace('{contador}', posicionSolucion))
+            if lupa_busqueda_cuenta == False: return False, resultadoCarga
+            
             lupa_busqueda_cuenta, resultadoCarga = cargandoElemento(driver, '','','',pathInputGenCN.replace('{contador}', posicionMotivoCliente))
             if lupa_busqueda_cuenta == False: return False, resultadoCarga
             
