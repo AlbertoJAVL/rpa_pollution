@@ -19,6 +19,9 @@ def cargandoElemento(driver, elemento, atributo, valorAtributo, path = False, va
         sleep(1)
         try: 
 
+            html = driver.execute_script("return document.documentElement.outerHTML;")
+            if 'The server you are trying to access is either busy or experiencing difficulties. ' in html: return False, 'Error Servidor Ocupado'
+
             contador += 1
             print('Validando posible warning')
             alert = Alert(driver)
@@ -530,21 +533,29 @@ def generacionCN(driver, cuenta, categoria, motivo, submotivo, solucion, comenta
 
         # Pantalla Cuentas (Click)
         lupa_busqueda_cuenta, resultadoCarga = cargandoElemento(driver, 'a', 'title', 'Cuentas')
-        if lupa_busqueda_cuenta == False: return False, 'Generado'
+        if lupa_busqueda_cuenta == False: 
+            if resultadoCarga == 'Error Pantalla NO Carga': return False, 'Generado'
+            else: return False, resultadoCarga
         
         # Buscando Elemento
         lupa_busqueda_cuenta, resultadoCarga = cargandoElemento(driver, 'button', 'title', 'Cuentas Applet de lista:Consulta')
-        if lupa_busqueda_cuenta == False: return False, 'Generado'
+        if lupa_busqueda_cuenta == False: 
+            if resultadoCarga == 'Error Pantalla NO Carga': return False, 'Generado'
+            else: return False, resultadoCarga
         sleep(5)
 
         # Busqueda Columna Cuenta
         posicionCuenta = obtencionColumna(driver, 'Nro. Cuenta', pathColumnasBusCuenta)
-        if posicionCuenta == False: return False, 'Error Estructura Elementos'
+        if posicionCuenta == False: 
+            if resultadoCarga == 'Error Pantalla NO Carga': return False, 'Error Estructura Elementos'
+            else: return False, resultadoCarga
 
         # Ingreso Cuenta
         # input_busqueda_cuenta = driver.find_element(By.XPATH, pathInputBusCuenta.replace('{contador}', posicionCuenta)).click()
         lupa_busqueda_cuenta, resultadoCarga = cargandoElemento(driver, '','','', pathInputBusCuenta.replace('{contador}', posicionCuenta))
-        if lupa_busqueda_cuenta == False: return False, 'Generado'
+        if lupa_busqueda_cuenta == False: 
+            if resultadoCarga == 'Error Pantalla NO Carga': return False, 'Generado'
+            else: return False, resultadoCarga
         sleep(1)
 
         try: input_busqueda_cuenta = driver.find_element(By.XPATH, pathInputBusCuenta.replace('{contador}', posicionCuenta) + '/input[2]')
@@ -559,15 +570,15 @@ def generacionCN(driver, cuenta, categoria, motivo, submotivo, solucion, comenta
         # Cargando Cuenta
         lupa_busqueda_cuenta, resultadoCarga = cargandoElemento(driver, '', '', '', f'//a[contains(text(), "{cuenta}")]')
         if lupa_busqueda_cuenta == False: 
-            if 'Inconsistencia' in resultadoCarga: return False, resultadoCarga
-            else: return False, 'Generado'
+            if resultadoCarga == 'Error Pantalla NO Carga': return False, 'Generado'
+            else: return False, resultadoCarga
         print('♥ Cargando cuenta OK! ♥')
         sleep(5)
 
         lupa_busqueda_cuenta, resultadoCarga = cargandoElemento(driver, 'input', 'aria-label', 'Cliente Desde')
         if lupa_busqueda_cuenta == False: 
-            if 'Inconsistencia' in resultadoCarga: return False, resultadoCarga
-            else: return False, 'Generado'
+            if resultadoCarga == 'Error Pantalla NO Carga': return False, 'Generado'
+            else: return False, resultadoCarga
         print('♥ Cuenta OK! ♥')
         sleep(10)
 
@@ -576,14 +587,14 @@ def generacionCN(driver, cuenta, categoria, motivo, submotivo, solucion, comenta
         # driver.find_element(By.XPATH, "//button[@title='Casos de negocio Applet de lista:Nuevo']").click()
         lupa_busqueda_cuenta, resultadoCarga = cargandoElemento(driver, 'button', 'title', 'Casos de negocio Applet de lista:Nuevo')
         if lupa_busqueda_cuenta == False: 
-            if 'Inconsistencia' in resultadoCarga: return False, resultadoCarga
-            else: return False, 'Generado'
+            if resultadoCarga == 'Error Pantalla NO Carga': return False, 'Generado'
+            else: return False, resultadoCarga
         
         print('Validando aparicion formulario')
         lupa_busqueda_cuenta, resultadoCarga = cargandoElemento(driver, 'input', 'aria-label', 'Cliente Desde')
         if lupa_busqueda_cuenta == False: 
-            if 'Inconsistencia' in resultadoCarga: return False, resultadoCarga
-            else: return False, 'Generado'
+            if resultadoCarga == 'Error Pantalla NO Carga': return False, 'Generado'
+            else: return False, resultadoCarga
 
         sleep(5)
         print('Leyendo encabezados')
