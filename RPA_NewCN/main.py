@@ -221,22 +221,50 @@ def workflow():
                 resultados['COMENTARIO'] = resultados['COMENTARIO'].replace('_', '').replace('-', '').replace(';', '').replace('"', '').strip()
                 resultados['MOTIVOCLIENTE'] = resultados['MOTIVOCLIENTE'].replace('_', '').replace('-', '').replace(';', '').replace('"', '').strip()
 
+                contadorIntentosGeneracionCN = 0
+                fGeneracionCN = True
+                while fGeneracionCN:
 
-                resultado, cnGenerado = generacionCN(driver, cuenta, resultados['CATEGORIA'], resultados['MOTIVO'], resultados['SUBMOTIVO'], resultados['SOLUCION'], resultados['COMENTARIO'], resultados['MOTIVOCLIENTE'])
-                if resultado == False:
-                    response = ajusteCerrado(id, '-', cnGenerado)
-                    print(response)
-                    send_msg(f'ERROR: {cnGenerado}\nCuenta: {cuenta}')
-                    driver.close()
-                    driver.quit()
-                    ultimo_usuario = None
-                    driver = None
-                    print(ultimo_usuario)
-                    sleep(10)
-                    return False
-                else: 
-                    response = ajusteCerrado(id, cnGenerado, 'Completado')
-                    print(response)
+                    contadorIntentosGeneracionCN += 1
+
+                    resultado, cnGenerado = generacionCN(driver, cuenta, resultados['CATEGORIA'], resultados['MOTIVO'], resultados['SUBMOTIVO'], resultados['SOLUCION'], resultados['COMENTARIO'], resultados['MOTIVOCLIENTE'])
+                    if resultado == False and cnGenerado == 'Generado':
+                        driver.quit()
+                        if contadorIntentosGeneracionCN == 3:
+                        
+                            response = ajusteCerrado(id, '-', cnGenerado)
+                            print(response)
+                            send_msg(f'ERROR: {cnGenerado}\nCuenta: {cuenta}')
+                            return False
+
+                        else:
+
+                            driver, status_logue, status_actualizacion = login(usuario, password)
+                            if status_logue == False:
+
+                                if 'Claves Invalidas' in status_actualizacion: 
+                                    response = ajusteCerrado(id, '-', f'Error: {status_actualizacion}')
+                                    send_msg(f'ERROR Claves Invalidad Cuenta: {cuenta} Usuario: {usuario} Password: {password}')
+                                else: response = ajusteCerrado(id, '-', 'Generado')
+
+                                print(response)
+                                ultimo_usuario = None
+                                driver = None
+                                return False
+
+                        print(ultimo_usuario)
+                        sleep(10)
+                        return False
+                    elif resultado == False and cnGenerado != 'Generado':
+                        driver.quit()
+                        response = ajusteCerrado(id, '-', cnGenerado)
+                        print(response)
+                        send_msg(f'ERROR: {cnGenerado}\nCuenta: {cuenta}')
+                        return False
+                    else: 
+                        response = ajusteCerrado(id, cnGenerado, 'Completado')
+                        print(response)
+
             except Exception as e: 
                 ultimo_usuario = None
                 driver = None
