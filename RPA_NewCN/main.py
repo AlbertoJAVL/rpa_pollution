@@ -264,6 +264,12 @@ def workflow():
                     else: 
                         response = ajusteCerrado(id, cnGenerado, 'Completado')
                         print(response)
+                        fGeneracionCN = False
+                        print('#########################################')
+                        print('#########################################')
+                        print('#########################################')
+                        print('#########################################')
+                        print('#########################################')
 
             except Exception as e: 
                 ultimo_usuario = None
