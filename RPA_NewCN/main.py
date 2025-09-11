@@ -226,6 +226,7 @@ def workflow():
                 while fGeneracionCN:
 
                     contadorIntentosGeneracionCN += 1
+                    print(f'###################### INTENTO FUNCION GENERACION CN: {contadorIntentosGeneracionCN} ######################')
 
                     resultado, cnGenerado = generacionCN(driver, cuenta, resultados['CATEGORIA'], resultados['MOTIVO'], resultados['SUBMOTIVO'], resultados['SOLUCION'], resultados['COMENTARIO'], resultados['MOTIVOCLIENTE'])
                     if resultado == False and cnGenerado == 'Generado':
