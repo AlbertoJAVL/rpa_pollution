@@ -256,7 +256,7 @@ def workflow():
                         print(ultimo_usuario)
                         sleep(10)
                         return False
-                    elif resultado == False and cnGenerado != 'Generado':
+                    elif resultado == False and ('Error' in cnGenerado or 'Inconsistencia' in cnGenerado):
                         driver.quit()
                         response = ajusteCerrado(id, '-', cnGenerado)
                         print(response)
