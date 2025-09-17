@@ -23,7 +23,7 @@ def cargandoElemento(driver, elemento, atributo, valorAtributo, path = False, va
             if 'The server you are trying to access is either busy or experiencing difficulties. ' in html: return False, 'Error Servidor Ocupado'
 
             contador += 1
-            print('Validando posible warning')
+            if contador in [10,20,30,40,50,60]: print('Validando posible warning')
             alert = Alert(driver)
             alert_txt = alert.text
             print(f'♦ {alert_txt} ♦')
@@ -45,7 +45,7 @@ def cargandoElemento(driver, elemento, atributo, valorAtributo, path = False, va
         
         except:
             try:
-                print('Esperando a que el elemento cargue')
+                if contador in [10,20,30,40,50,60]: print('Esperando a que el elemento cargue')
                 if path == False: 
                     driver.find_element(By.XPATH, f"//{elemento}[@{atributo}='{valorAtributo}']").click()
                     return True, ''
@@ -54,7 +54,7 @@ def cargandoElemento(driver, elemento, atributo, valorAtributo, path = False, va
                     return True, ''
                 
             except:
-                print('Pantalla Cargando')
+                if contador in [10,20,30,40,50,60]: print('Pantalla Cargando')
                 if contador == valContador: return False, 'Error Pantalla NO Carga'
 
 def obtencionColumna(driver, nombreColumna, path):
@@ -528,179 +528,199 @@ def generacionCN(driver, cuenta, categoria, motivo, submotivo, solucion, comenta
         pathInputBusCuenta = '/html/body/div[1]/div/div[5]/div/div[8]/div[2]/div[1]/div/div[1]/div/form/span/div/div[3]/div/div/div[3]/div[3]/div/div[2]/table/tbody/tr[2]/td[{contador}]'
         pathColumnasGenCN = '/html/body/div[1]/div/div[5]/div/div[8]/div[2]/div[1]/div/div[3]/div[2]/div[3]/div/form/span/div/div[3]/div/div/div[3]/div[2]/div/table/thead/tr/th[{contador}]/div'
         pathInputGenCN = '/html/body/div[1]/div/div[5]/div/div[8]/div[2]/div[1]/div/div[3]/div[2]/div[3]/div/form/span/div/div[3]/div/div/div[3]/div[3]/div/div[2]/table/tbody/tr[2]/td[{contador}]'
-
-        print('→ Buscando Cuenta')
+        
+        print('#################### INICIANDO FUNCION GENERACION CN ####################')
 
         # Pantalla Cuentas (Click)
+        print('→ Accediendo a pantalla Cuentas')
         lupa_busqueda_cuenta, resultadoCarga = cargandoElemento(driver, 'a', 'title', 'Cuentas')
         if lupa_busqueda_cuenta == False: 
-            if resultadoCarga == 'Error Pantalla NO Carga': return False, 'Generado'
-            else: return False, resultadoCarga
+            if resultadoCarga == 'Error Pantalla NO Carga': return False, 'Generado', 'Generado'
+            else: return False, resultadoCarga, resultadoCarga
+        print('Pantalla Cuentas OK!')
         
         # Buscando Elemento
+        print('→ Accediendo a boton lupa busqueda')
         lupa_busqueda_cuenta, resultadoCarga = cargandoElemento(driver, 'button', 'title', 'Cuentas Applet de lista:Consulta')
         if lupa_busqueda_cuenta == False: 
-            if resultadoCarga == 'Error Pantalla NO Carga': return False, 'Generado'
-            else: return False, resultadoCarga
+            if resultadoCarga == 'Error Pantalla NO Carga': return False, 'Generado', 'Generado'
+            else: return False, resultadoCarga, resultadoCarga
+        print('Lupa de busqueda OK!')
         sleep(5)
 
         # Busqueda Columna Cuenta
+        print('→  Obteniendo posicion Nro. Cuenta')
         posicionCuenta = obtencionColumna(driver, 'Nro. Cuenta', pathColumnasBusCuenta)
         if posicionCuenta == False: 
-            if resultadoCarga == 'Error Pantalla NO Carga': return False, 'Error Estructura Elementos'
-            else: return False, resultadoCarga
+            if resultadoCarga == 'Error Pantalla NO Carga': return False, 'Error Estructura Elementos', ''
+            else: return False, resultadoCarga, resultadoCarga
+        print('Posicion obtenida OK!')
 
         # Ingreso Cuenta
-        # input_busqueda_cuenta = driver.find_element(By.XPATH, pathInputBusCuenta.replace('{contador}', posicionCuenta)).click()
+        print('→ Accediendo a campo Cuenta')
         lupa_busqueda_cuenta, resultadoCarga = cargandoElemento(driver, '','','', pathInputBusCuenta.replace('{contador}', posicionCuenta))
         if lupa_busqueda_cuenta == False: 
-            if resultadoCarga == 'Error Pantalla NO Carga': return False, 'Generado'
-            else: return False, resultadoCarga
+            if resultadoCarga == 'Error Pantalla NO Carga': return False, 'Generado', 'Generado'
+            else: return False, resultadoCarga, resultadoCarga
+        print('Campo OK!')
         sleep(1)
 
+        print('→ Ingresando Cuenta')
         try: input_busqueda_cuenta = driver.find_element(By.XPATH, pathInputBusCuenta.replace('{contador}', posicionCuenta) + '/input[2]')
         except:
             try: input_busqueda_cuenta = driver.find_element(By.XPATH, pathInputBusCuenta.replace('{contador}', posicionCuenta) + '/input')
-            except: return False, 'Error Estructura Elementos'
+            except: return False, 'Error Estructura Elementos', ''
 
         input_busqueda_cuenta.send_keys(cuenta)
         input_busqueda_cuenta.send_keys(Keys.RETURN)
         print('♦ Cuenta Ingresada ♦')
 
         # Cargando Cuenta
+        print('→ Esperando a que la cuenta cargue')
         lupa_busqueda_cuenta, resultadoCarga = cargandoElemento(driver, '', '', '', f'//a[contains(text(), "{cuenta}")]')
         if lupa_busqueda_cuenta == False: 
-            if resultadoCarga == 'Error Pantalla NO Carga': return False, 'Error Cuenta Invalida'
-            else: return False, resultadoCarga
+            if resultadoCarga == 'Error Pantalla NO Carga': return False, 'Generado', 'Error Cuenta NO Valida'
+            else: return False, resultadoCarga, resultadoCarga
         print('♥ Cargando cuenta OK! ♥')
         sleep(5)
 
+        print('→ Profundizando en cuenta')
         lupa_busqueda_cuenta, resultadoCarga = cargandoElemento(driver, 'input', 'aria-label', 'Cliente Desde')
         if lupa_busqueda_cuenta == False: 
-            if resultadoCarga == 'Error Pantalla NO Carga': return False, 'Generado'
-            else: return False, resultadoCarga
+            if resultadoCarga == 'Error Pantalla NO Carga': return False, 'Generado', 'Generado'
+            else: return False, resultadoCarga, resultadoCarga
         print('♥ Cuenta OK! ♥')
         sleep(10)
 
         # Crecion CN (Click)
-        print('→ Generando CN')
-        # driver.find_element(By.XPATH, "//button[@title='Casos de negocio Applet de lista:Nuevo']").click()
+        print('→ Accediento a btn generacion CN')
         lupa_busqueda_cuenta, resultadoCarga = cargandoElemento(driver, 'button', 'title', 'Casos de negocio Applet de lista:Nuevo')
         if lupa_busqueda_cuenta == False: 
-            if resultadoCarga == 'Error Pantalla NO Carga': return False, 'Generado'
-            else: return False, resultadoCarga
+            if resultadoCarga == 'Error Pantalla NO Carga': return False, 'Generado', 'Generado'
+            else: return False, resultadoCarga, resultadoCarga
+        print('BTN OK!')
         
-        print('Validando aparicion formulario')
+        print('→ Validando aparicion formulario')
         lupa_busqueda_cuenta, resultadoCarga = cargandoElemento(driver, 'input', 'aria-label', 'Cliente Desde')
         if lupa_busqueda_cuenta == False: 
-            if resultadoCarga == 'Error Pantalla NO Carga': return False, 'Generado'
-            else: return False, resultadoCarga
+            if resultadoCarga == 'Error Pantalla NO Carga': return False, 'Generado', 'Generado'
+            else: return False, resultadoCarga, resultadoCarga
+        print('Formulario OK!')
 
         sleep(5)
-        print('Leyendo encabezados')
+        print('→ Leyendo encabezados de formulario')
 
         posicionCNGenerado = obtencionColumna(driver, 'Caso de negocio', pathColumnasGenCN)
-        if posicionCNGenerado == False: return False, 'Error Pantalla NO Carga'
+        if posicionCNGenerado == False: return False, 'Error Pantalla NO Carga', ''
 
         posicionCategoria = obtencionColumna(driver, 'Categoría', pathColumnasGenCN)
-        if posicionCategoria == False: return False, 'Error Estructura Elemento'
+        if posicionCategoria == False: return False, 'Error Estructura Elemento', ''
 
         posicionMotivos = obtencionColumna(driver, 'Motivos', pathColumnasGenCN)
-        if posicionMotivos == False: return False, 'Error Estructura Elemento'
+        if posicionMotivos == False: return False, 'Error Estructura Elemento', ''
         
         posicionSubmotivo = obtencionColumna(driver, 'Submotivo', pathColumnasGenCN)
-        if posicionSubmotivo == False: return False, 'Error Estructura Elemento'
+        if posicionSubmotivo == False: return False, 'Error Estructura Elemento', ''
         
         posicionSolucion = obtencionColumna(driver, 'Solución', pathColumnasGenCN)
-        if posicionSolucion == False: return False, 'Error Estructura Elemento'
+        if posicionSolucion == False: return False, 'Error Estructura Elemento', ''
         
         posicionComentarios = obtencionColumna(driver, 'Comentarios', pathColumnasGenCN)
-        if posicionComentarios == False: return False, 'Error Estructura Elemento'
+        if posicionComentarios == False: return False, 'Error Estructura Elemento', ''
 
         if 'SIN MOTIVO' not in motivoCliente.upper():
             posicionMotivoCliente = obtencionColumna(driver, 'Motivo Cliente', pathColumnasGenCN)
-            if posicionMotivoCliente == False: return False, 'Error Estructura Elemento'
+            if posicionMotivoCliente == False: return False, 'Error Estructura Elemento', ''
+
+        print('Posicion de componentes de formulario OK!')
 
 
         # Busqueda Campo Categoria
+        print('→ Accediendo a campo categoria')
         lupa_busqueda_cuenta, resultadoCarga = cargandoElemento(driver, '','','', pathInputGenCN.replace('{contador}', posicionCategoria))
-        if lupa_busqueda_cuenta == False: return False, resultadoCarga
+        if lupa_busqueda_cuenta == False: return False, resultadoCarga, resultadoCarga
 
-        # driver.find_element(By.XPATH, pathInputGenCN.replace('{contador}', posicionCategoria)).click()
+        print('→ Ingresando Categoria')
         try: input_categoria = driver.find_element(By.XPATH, pathInputGenCN.replace('{contador}', posicionCategoria) + '/input[2]')
         except: 
             try: input_categoria = driver.find_element(By.XPATH, pathInputGenCN.replace('{contador}', posicionCategoria) + '/input')
-            except: return False, 'Error Estructura Elemento'
+            except: return False, 'Error Estructura Elemento', ''
         
         input_categoria.send_keys(categoria)
         input_categoria.send_keys(Keys.RETURN)
         print('♦ Categoria Ingresada ♦')
 
         # Busqueda Campo Motivo
+        print('→ Accediendo a campo Motivo')
         lupa_busqueda_cuenta, resultadoCarga = cargandoElemento(driver, '','','', pathInputGenCN.replace('{contador}', posicionMotivos))
-        if lupa_busqueda_cuenta == False: return False, resultadoCarga
+        if lupa_busqueda_cuenta == False: return False, resultadoCarga, resultadoCarga
 
-        # driver.find_element(By.XPATH, pathInputGenCN.replace('{contador}', posicionMotivos)).click()
+        print('→ Ingresando Motivo')
         try: input_motivo = driver.find_element(By.XPATH, pathInputGenCN.replace('{contador}', posicionMotivos) + '/input[2]')
         except: 
             try: input_motivo = driver.find_element(By.XPATH, pathInputGenCN.replace('{contador}', posicionMotivos) + '/input')
-            except: return False, 'Error Estructura Elemento'
+            except: return False, 'Error Estructura Elemento', ''
 
         input_motivo.send_keys(motivo)
         input_motivo.send_keys(Keys.RETURN)
         print('♦ Motivo Ingresado ♦')
 
         # Busqueda Campo Submotivo
+        print('→ Accediendo a Submotivo')
         lupa_busqueda_cuenta, resultadoCarga = cargandoElemento(driver, '','','',pathInputGenCN.replace('{contador}', posicionSubmotivo))
-        if lupa_busqueda_cuenta == False: return False, resultadoCarga
+        if lupa_busqueda_cuenta == False: return False, resultadoCarga, resultadoCarga
 
-        # driver.find_element(By.XPATH, pathInputGenCN.replace('{contador}', posicionSubmotivo)).click()
+        print('→ Ingresando Submotivo')
         try: input_submotivo = driver.find_element(By.XPATH, pathInputGenCN.replace('{contador}', posicionSubmotivo) + '/input[2]')
         except: 
             try: input_submotivo = driver.find_element(By.XPATH, pathInputGenCN.replace('{contador}', posicionSubmotivo) + '/input')
-            except: return False, 'Error Estructura Elemento'
+            except: return False, 'Error Estructura Elemento', ''
 
         input_submotivo.send_keys(submotivo)
         input_submotivo.send_keys(Keys.RETURN)
         print('♦ Submotivo Ingresado ♦')
 
         # Busqueda Campo Solucion
+        print('→ Accediendo a Solucion')
         lupa_busqueda_cuenta, resultadoCarga = cargandoElemento(driver, '','','',pathInputGenCN.replace('{contador}', posicionSolucion))
-        if lupa_busqueda_cuenta == False: return False, resultadoCarga
+        if lupa_busqueda_cuenta == False: return False, resultadoCarga, resultadoCarga
         
-        # driver.find_element(By.XPATH, pathInputGenCN.replace('{contador}', posicionSolucion)).click()
+        print('→ Ingresando Solucion')
         try: input_solucion = driver.find_element(By.XPATH, pathInputGenCN.replace('{contador}', posicionSolucion) + '/input[2]')
         except: 
             try: input_solucion = driver.find_element(By.XPATH, pathInputGenCN.replace('{contador}', posicionSolucion) + '/input')
-            except: return False, 'Error Estructura Elemento'
+            except: return False, 'Error Estructura Elemento', ''
 
         input_solucion.send_keys(solucion)
         input_solucion.send_keys(Keys.RETURN)
         print('♦ Solución Ingresada ♦')
 
         # Busqueda Campo Comentario
+        print('→ Accediendo a Comentario')
         resultado, resultadoCarga = cargandoElemento(driver, '','','', pathInputGenCN.replace('{contador}', posicionComentarios))
-        if resultado == False: return False, resultadoCarga
+        if resultado == False: return False, resultadoCarga, resultadoCarga
 
+        print('→ Ingresando comentario')
         try: input_comentario = driver.find_element(By.XPATH, pathInputGenCN.replace('{contador}', posicionComentarios) + '/textarea')
-        except: return False, 'Error Estructura Elemento'
+        except: return False, 'Error Estructura Elemento', ''
 
         input_comentario.send_keys(comentario)
         print('♦ Comentario Ingresado ♦')
 
         # Busqueda Campo Motivo Cliente
         if 'SIN MOTIVO' not in motivoCliente.upper():
+            print('→ Accedoemdo a Motivo Cliente')
             lupa_busqueda_cuenta, resultadoCarga = cargandoElemento(driver, '','','',pathInputGenCN.replace('{contador}', posicionSolucion))
-            if lupa_busqueda_cuenta == False: return False, resultadoCarga
+            if lupa_busqueda_cuenta == False: return False, resultadoCarga, resultadoCarga
             
             lupa_busqueda_cuenta, resultadoCarga = cargandoElemento(driver, '','','',pathInputGenCN.replace('{contador}', posicionMotivoCliente))
-            if lupa_busqueda_cuenta == False: return False, resultadoCarga
+            if lupa_busqueda_cuenta == False: return False, resultadoCarga, resultadoCarga
             
-            # driver.find_element(By.XPATH, pathInputGenCN.replace('{contador}', posicionSolucion)).click()
+            print('→ Ingresando Motivo cliente')
             try: input_motivo_cliente = driver.find_element(By.XPATH, pathInputGenCN.replace('{contador}', posicionMotivoCliente) + '/input[2]')
             except: 
                 try: input_motivo_cliente = driver.find_element(By.XPATH, pathInputGenCN.replace('{contador}', posicionMotivoCliente) + '/input')
-                except: return False, 'Error Estructura Elemento'
+                except: return False, 'Error Estructura Elemento', ''
 
             input_motivo_cliente.send_keys(motivoCliente)
             input_motivo_cliente.send_keys(Keys.RETURN)
@@ -709,6 +729,7 @@ def generacionCN(driver, cuenta, categoria, motivo, submotivo, solucion, comenta
 
         try:
 
+            print('→ Obteniendo CN Generado')
             noCN = driver.find_element(By.XPATH, pathInputGenCN.replace('{contador}', posicionCNGenerado) + '/a')
             noCN = noCN.text
             print(f'♦ CN Generado: {noCN} ♦')
@@ -716,33 +737,34 @@ def generacionCN(driver, cuenta, categoria, motivo, submotivo, solucion, comenta
             driver.find_element(By.XPATH, f'//a[contains(text(), "{noCN}")]').click()
             print(f'♦ Acceso al CN: {noCN} OK!♦')
 
-        except: return False, 'Error Acceso CN'
+        except: return False, 'Error Acceso CN', ''
 
         print('→ Cargando Pantalla CN ←')
         resultado, resultadoCarga = cargandoElemento(driver, 'input', 'aria-label', 'Motivo del cierre', valContador=35)
         if resultado == False:
 
-            if 'Inconsistencia Siebel' in resultadoCarga or 'Error' in resultadoCarga: return False, resultadoCarga
+            if 'Inconsistencia Siebel' in resultadoCarga or 'Error' in resultadoCarga: return False, resultadoCarga, resultadoCarga
             else:
                 driver.back()
                 lupa_busqueda_cuenta, resultadoCarga = cargandoElemento(driver, 'input', 'aria-label', 'Cliente Desde')
-                if lupa_busqueda_cuenta == False: return False, resultadoCarga
+                if lupa_busqueda_cuenta == False: return False, resultadoCarga, resultadoCarga
 
                 driver.forward()
                 resultado, resultadoCarga = cargandoElemento(driver, 'input', 'aria-label', 'Motivo del cierre', valContador=35)
                 if resultado == False: 
-                    return False, resultadoCarga
+                    return False, resultadoCarga, resultadoCarga
             
         # Busqueda Campo Motivo Cierre
         try:
+            print('→ Ingresando Motivo cierre')
             driver.find_element(By.XPATH, "//input[@aria-label='Motivo del cierre']").click()
             input_motivo_cierre = driver.find_element(By.XPATH, "//input[@aria-label='Motivo del cierre']")
             input_motivo_cierre.send_keys("RAC INFORMA Y SOLUCIONA")
             print('♦ Campo Motivo Cierre ♦')
-        except: return False, 'Error Campo Motivo Cierre'
+        except: return False, 'Error Campo Motivo Cierre', ''
 
         try:
-
+            print('→ Ingresando Estado')
             # Busqueda Campo Estado
             driver.find_element(By.XPATH, "//input[@aria-label='Estado']").click()
             # sleep(10000)
@@ -750,21 +772,21 @@ def generacionCN(driver, cuenta, categoria, motivo, submotivo, solucion, comenta
             driver.find_element(By.XPATH, "//span[@id='s_1_1_143_0_icon']").click()
             sleep(3)
             posicion = obtencionColumna(driver, 'Cerrado', pathEstado)
-            if posicion == False: return False, 'Error Pantalla NO Carga'
+            if posicion == False: return False, 'Error Pantalla NO Carga', ''
             # sleep(10000)
             driver.find_element(By.XPATH, pathEstado.replace('{contador}', posicion)).click()
             print('♦ Campo Estado OK! ♦')
         
-        except: return False, 'Error Campo Estado'
+        except: return False, 'Error Campo Estado', ''
 
-        # driver.find_element(By.XPATH, "//button[@aria-label='Caso de negocio Applet de formulario:Guardar']").click()
+        print('→ Guardando CN')
         lupa_busqueda_cuenta, resultadoCarga = cargandoElemento(driver, 'button', 'aria-label', 'Caso de negocio Applet de formulario:Guardar')
-        if lupa_busqueda_cuenta == False: return False, resultadoCarga
+        if lupa_busqueda_cuenta == False: return False, resultadoCarga, resultadoCarga
         print('CN Guardado y Cerrado OK!')
 
-        return True, noCN
+        return True, noCN, ''
 
     except Exception as e: 
         print(f'ERROR EN FUNCION INICIO. ERROR: {e}')
-        return False, 'Generado'
+        return False, 'Generado', 'Generado'
   

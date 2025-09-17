@@ -222,20 +222,21 @@ def workflow():
                 resultados['MOTIVOCLIENTE'] = resultados['MOTIVOCLIENTE'].replace('_', '').replace('-', '').replace(';', '').replace('"', '').strip()
 
                 contadorIntentosGeneracionCN = 0
+                contadorIntentosCuenta = 0
                 fGeneracionCN = True
                 while fGeneracionCN:
 
                     contadorIntentosGeneracionCN += 1
                     print(f'###################### INTENTO FUNCION GENERACION CN: {contadorIntentosGeneracionCN} ######################')
 
-                    resultado, cnGenerado = generacionCN(driver, cuenta, resultados['CATEGORIA'], resultados['MOTIVO'], resultados['SUBMOTIVO'], resultados['SOLUCION'], resultados['COMENTARIO'], resultados['MOTIVOCLIENTE'])
+                    resultado, cnGenerado, statusFinal = generacionCN(driver, cuenta, resultados['CATEGORIA'], resultados['MOTIVO'], resultados['SUBMOTIVO'], resultados['SOLUCION'], resultados['COMENTARIO'], resultados['MOTIVOCLIENTE'])
                     if resultado == False and cnGenerado == 'Generado':
                         driver.quit()
                         if contadorIntentosGeneracionCN == 3:
                         
-                            response = ajusteCerrado(id, '-', cnGenerado)
+                            response = ajusteCerrado(id, '-', statusFinal)
                             print(response)
-                            send_msg(f'ERROR: {cnGenerado}\nCuenta: {cuenta}')
+                            send_msg(f'ERROR: {statusFinal}\nCuenta: {cuenta}')
                             return False
 
                         else:
