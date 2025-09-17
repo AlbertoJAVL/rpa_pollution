@@ -570,7 +570,7 @@ def generacionCN(driver, cuenta, categoria, motivo, submotivo, solucion, comenta
         # Cargando Cuenta
         lupa_busqueda_cuenta, resultadoCarga = cargandoElemento(driver, '', '', '', f'//a[contains(text(), "{cuenta}")]')
         if lupa_busqueda_cuenta == False: 
-            if resultadoCarga == 'Error Pantalla NO Carga': return False, 'Generado'
+            if resultadoCarga == 'Error Pantalla NO Carga': return False, 'Error Cuenta Invalida'
             else: return False, resultadoCarga
         print('♥ Cargando cuenta OK! ♥')
         sleep(5)
