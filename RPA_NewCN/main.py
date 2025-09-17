@@ -237,6 +237,8 @@ def workflow():
                             response = ajusteCerrado(id, '-', statusFinal)
                             print(response)
                             send_msg(f'ERROR: {statusFinal}\nCuenta: {cuenta}')
+                            ultimo_usuario = None
+                            driver = None
                             return False
 
                         else:
