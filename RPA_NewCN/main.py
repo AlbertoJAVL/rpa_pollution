@@ -174,10 +174,10 @@ def workflow():
                             send_msg(f'ERROR Claves Invalidad Cuenta: {cuenta} Usuario: {usuario} Password: {password}')
                         else: response = ajusteCerrado(id, '-', 'Generado')
                         print(response)
-                        ultimo_usuario = None
-                        driver = None
                         driver.close()
                         driver.quit()
+                        ultimo_usuario = None
+                        driver = None
                         return False
 
                     ##### Se actualiza el usuario en la sesion anterior
@@ -262,6 +262,8 @@ def workflow():
                         response = ajusteCerrado(id, '-', cnGenerado)
                         print(response)
                         send_msg(f'ERROR: {cnGenerado}\nCuenta: {cuenta}')
+                        ultimo_usuario = None
+                        driver = None
                         return False
                     else: 
                         response = ajusteCerrado(id, cnGenerado, 'Completado')
