@@ -788,6 +788,6 @@ def generacionCN(driver, cuenta, categoria, motivo, submotivo, solucion, comenta
 
     except Exception as e: 
         print(f'ERROR EN FUNCION INICIO. ERROR: {e}')
-        if 'Alert Text:' in str(e): return False, f'Inconsistencia Siebel: {str(e)}', f'Inconsistencia Siebel: {str(e)}'
+        if 'La tipificación no existe en el Controlador de CN' in str(e): return False, f'Error: Tipificacion CN No existe en controlador', f'Error: Tipificacion CN No existe en controlador'
         return False, 'Generado', 'Generado'
   
