@@ -788,5 +788,6 @@ def generacionCN(driver, cuenta, categoria, motivo, submotivo, solucion, comenta
 
     except Exception as e: 
         print(f'ERROR EN FUNCION INICIO. ERROR: {e}')
+        if 'Alert Text:' in str(e): return False, f'Inconsistencia Siebel: {str(e)}', f'Inconsistencia Siebel: {str(e)}'
         return False, 'Generado', 'Generado'
   
