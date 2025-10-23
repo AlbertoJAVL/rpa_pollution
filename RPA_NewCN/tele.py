@@ -20,7 +20,7 @@ from datetime import datetime
 
 # ───────────────  CONFIGURACIÓN (tomada de tu script original)  ─────────────
 PROCESS_EXE          = "py.exe"   # nombre exacto en el Administrador de tareas
-BAT_PATH             = r"C:\Rpa_CX_Bots_Proxmox\RPACNOS\Init.bat"
+BAT_PATH             = r"C:\rpa_pollution\RPA_NewCN\Init.bat"
 
 CHECK_EVERY_SEC      = 30     # frecuencia de chequeo
 MEM_LIMIT_SYSTEM_PCT = 85     # % de RAM total que dispara alerta
@@ -62,8 +62,8 @@ def reiniciar_bot() -> None:
     """Lanza el BAT de arranque tras avisar por Telegram."""
     send_msg(f"⚠️  {IP_ADDR} – Reiniciando RPA con {os.path.basename(BAT_PATH)}")
     subprocess.Popen(["cmd", "/c", BAT_PATH], creationflags=subprocess.CREATE_NO_WINDOW)
-    # subprocess.Popen(["cmd", "/c", BAT_PATH], creationflags=subprocess.CREATE_NO_WINDOW)
-    # subprocess.Popen(["cmd", "/c", BAT_PATH], creationflags=subprocess.CREATE_NO_WINDOW)
+    subprocess.Popen(["cmd", "/c", BAT_PATH], creationflags=subprocess.CREATE_NO_WINDOW)
+    subprocess.Popen(["cmd", "/c", BAT_PATH], creationflags=subprocess.CREATE_NO_WINDOW)
 
 # ───────────────  BUCLE PRINCIPAL  ──────────────────────────────────────────
 def main() -> None:
@@ -101,9 +101,9 @@ def main() -> None:
         time.sleep(CHECK_EVERY_SEC)
 
 # ───────────────  EJECUCIÓN  ────────────────────────────────────────────────
-# if __name__ == "__main__":
-#     try:
-#         main()
-#     except KeyboardInterrupt:
-#         send_msg("⏹️  Watch-dog detenido manualmente")
-# send_msg("⏹️ Prueba pollution")
+if __name__ == "__main__":
+    try:
+        main()
+    except KeyboardInterrupt:
+        send_msg("⏹️  Watch-dog detenido manualmente")
+send_msg("⏹️ Prueba pollution")

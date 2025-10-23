@@ -32,10 +32,31 @@ def start_webdriver():
     try:
         
         options = webdriver.ChromeOptions()
-        options.add_experimental_option('excludeSwitches', ['enable-logging'])
-        options.add_argument('--disable-gpu')
-        options.add_argument('--window-size=1024,768')
+        options.add_argument("--log-level=3")
+        options.add_argument("--disable-dev-shm-usage")
+        options.add_argument("--no-sandbox")
+        options.add_argument("--disable-extensions")
+        options.add_argument("--disable-gpu")
+        options.add_argument("--disable-background-networking")
+        options.add_argument("--disable-software-rasterizer")
+        options.add_argument("--disable-sync")
+        options.add_argument("--metrics-recording-only")
+        options.add_argument("--disable-default-apps")
+        options.add_argument('--headless=new')  # ← Headless activado
+        # Tamaño grande (alto generoso para evitar menús plegados)
+        options.add_argument("--window-size=1920,2000")
+        # Evita zoom/DPI del SO (Windows suele forzar 125%)
+        options.add_argument("--high-dpi-support=1")
+        options.add_argument("--force-device-scale-factor=1")
+        options.add_argument("user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/114.0.0.0 Safari/537.36")
+
         driver = webdriver.Chrome(options=options)
+        driver.execute_cdp_cmd("Emulation.setDeviceMetricsOverride", {
+            "width": 1920,
+            "height": 2000,
+            "deviceScaleFactor": 1,
+            "mobile": False
+        })
         # driver = webdriver.Chrome(
         #                         executable_path =r"C:\Rpa_CX_Bots_Proxmox\Rpa_Ajustes_CV\driver_chrome\\chromedriver.exe",
         #                         options=options
