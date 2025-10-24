@@ -307,10 +307,10 @@ while True == True:
         response = ajusteCerrado(id, '-', 'Generado')
 
         resultado = workflow()
-        if resultado == False:
-            system("taskkill /f /im chrome.exe")
-            system("taskkill /f /im chrome.exe")
-            system("taskkill /f /im chrome.exe")
+        if resultado == False: pass
+            # system("taskkill /f /im chrome.exe")
+            # system("taskkill /f /im chrome.exe")
+            # system("taskkill /f /im chrome.exe")
     else: 
         print('Esperando Cuentas ')
         sleep(10)
