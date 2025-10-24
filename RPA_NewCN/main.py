@@ -10,80 +10,12 @@ import socket
 import re
 import os
 
-# datos = [
-#     {
-#     'cuenta':'46985756',
-#     'usuario':'mvillalobos',
-#     'contraseña':'SMI.89.rc108'
-#     },
-#     {
-#     'cuenta':'46976595',
-#     'usuario':'mvillalobos',
-#     'contraseña':'SMI.89.rc108'
-#     },
-#     {
-#     'cuenta':'46976404',
-#     'usuario':'dmartinezf',
-#     'contraseña':'F3t6*!e]2vOBc	'
-#     },
-#     {
-#     'cuenta':'35490965',
-#     'usuario':'rpanotdone5.service',
-#     'contraseña':'yj08ySVJZf9U0rz/'
-#     },
-#     {
-#     'cuenta':'28071421',
-#     'usuario':'rpanotdone4.service',
-#     'contraseña':'iNly6oWabKLMKNW/'
-#     },
-#     {
-#     'cuenta':'36992847',
-#     'usuario':'rpanotdone5.service',
-#     'contraseña':'yj08ySVJZf9U0rz/'
-#     },
-#     {
-#     'cuenta':'24459672',
-#     'usuario':'mvillalobos',
-#     'contraseña':'SMI.89.rc108'
-#     },
-# ]
 
-# print(datos[0]['usuario'])
-
-# def loginprueba(usuario, password):
-#     print(f'sesion iniciada con usuario: {usuario}')
 
 ultimo_usuario = None
 driver = None
 
-# def main(datos):
 
-#     global ultimo_usuario
-
-#     while len(datos) > 0:
-#         print(f'Usuario actual de la sesion: {ultimo_usuario}')
-#         sleep(1)
-#         info = datos[0]
-#         print(info)
-#         del datos[0]
-
-#         cuenta = info['cuenta']
-#         usuario = info['usuario']
-#         constraseña = info['contraseña']
-
-#         print(f"➡️ Procesando cuenta: {cuenta} con usuario: {usuario}")
-
-#         if usuario != ultimo_usuario:
-#             try:
-#                 print('Intando hacer close y quit de la sesion anterior')
-#             except: pass
-#             loginprueba(usuario, constraseña)
-#             ultimo_usuario = usuario
-
-#         else: print("🟢 Reutilizando sesión actual de Chrome")
-        
-#         print('aqui va la funcion de generacion del cn')
-# main(datos)
 
 
 def delTemporales():
@@ -148,45 +80,28 @@ def workflow():
 
                 print(f"➡️ Procesando cuenta: {cuenta} con usuario: {usuario}")
 
-                #### Validacion de la sesion anterior
-                if usuario != ultimo_usuario:
-                    try:
-                        ###### Se intenta cerrar chrome por medio del driver
-                        driver.close()
-                        driver.quit()
-                    except: 
-                        ###### Se cierra chrome en caso de que no se pueda por driver
-                        # system("taskkill /f /im chrome.exe")
-                        # system("taskkill /f /im chrome.exe")
-                        # system("taskkill /f /im chrome.exe")
-                        # system("taskkill /f /im chrome.exe")
-                        # system("taskkill /f /im chrome.exe")
-                        # system("taskkill /f /im chrome.exe")
-                        # system("taskkill /f /im chrome.exe")
-                        # system("taskkill /f /im chrome.exe")
-                        # system("taskkill /f /im chrome.exe")
-                        pass
+                try:
+                    ###### Se intenta cerrar chrome por medio del driver
+                    driver.quit()
+                except: pass
 
-                    ##### Se Inicia la sesion para cuando resulto un usuario distinto
-                    driver, status_logue, status_actualizacion = login(usuario, password)
-                    if status_logue == False:
-                        if 'Claves Invalidas' in status_actualizacion: 
-                            response = ajusteCerrado(id, '-', f'Error: {status_actualizacion}')
-                            send_msg(f'ERROR Claves Invalidad Cuenta: {cuenta} Usuario: {usuario} Password: {password}')
-                        else: response = ajusteCerrado(id, '-', 'Generado')
-                        print(response)
-                        driver.close()
-                        driver.quit()
-                        ultimo_usuario = None
-                        driver = None
-                        return False
+                ##### Se Inicia la sesion para cuando resulto un usuario distinto
+                driver, status_logue, status_actualizacion = login(usuario, password)
+                if status_logue == False:
+                    if 'Claves Invalidas' in status_actualizacion: 
+                        response = ajusteCerrado(id, '-', f'Error: {status_actualizacion}')
+                        send_msg(f'ERROR Claves Invalidad Cuenta: {cuenta} Usuario: {usuario} Password: {password}')
+                    else: response = ajusteCerrado(id, '-', 'Generado')
+                    print(response)
+                    try: driver.quit()
+                    except: pass
+                    ultimo_usuario = None
+                    driver = None
+                    return False
 
-                    ##### Se actualiza el usuario en la sesion anterior
-                    ultimo_usuario = usuario
-                    print(f"🟢 Sesion iniciada con el usuario: {usuario}")
-
-                #### En caso de que sea el mismo usuario anterior
-                else: print("🟢 Reutilizando sesión actual de Chrome")
+                ##### Se actualiza el usuario en la sesion anterior
+                ultimo_usuario = usuario
+                print(f"🟢 Sesion iniciada con el usuario: {usuario}")
                 
                 #### Con la sesion iniciada se pasa a generar el CN
                 texto = plantillaCN.replace('\r', '\n')
@@ -232,6 +147,7 @@ def workflow():
 
                     resultado, cnGenerado, statusFinal = generacionCN(driver, cuenta, resultados['CATEGORIA'], resultados['MOTIVO'], resultados['SUBMOTIVO'], resultados['SOLUCION'], resultados['COMENTARIO'], resultados['MOTIVOCLIENTE'])
                     if resultado == False and cnGenerado == 'Generado':
+                        driver.save_screenshot(f'error_{cuenta}.png')
                         driver.quit()
                         if contadorIntentosGeneracionCN == 3:
                         
@@ -277,6 +193,7 @@ def workflow():
                         print('#########################################')
                         print('#########################################')
                         print('#########################################')
+                        driver.quit()
 
             except Exception as e: 
                 ultimo_usuario = None

@@ -66,6 +66,7 @@ def start_webdriver():
         return driver
     except Exception as e:
         description_error('01','start_webdriver',e)
+        return False
 
 def login(usuario, contraseña):
     '''
@@ -79,6 +80,7 @@ def login(usuario, contraseña):
         - stutus (bool): True si el incio de sesion fue correcto, False en caso contrario
     '''
     driver  = start_webdriver()
+    if driver == False: return False, False, 'Generado'
     driver.maximize_window()
     # sleep(10000)
     try:
@@ -119,15 +121,14 @@ def login(usuario, contraseña):
 
             #LOGIN (click)
             driver.find_element(By.ID,"s_swepi_22").click()
-            sleep(5)
+            sleep(15)
             
             #Validacion de credencailaes correctas
             try:
                 status_bar  = driver.find_element(By.ID,"statusBar")
-                act.click(status_bar)
-                act.double_click(status_bar).perform()
-                texto = my_copy(driver)
-                if 'incorrecta' in texto:
+                errorCredenciales = driver.execute_script("return arguments[0].textContent;", status_bar)
+                print(errorCredenciales)
+                if 'incorrecta' in errorCredenciales:
                     print('CLAVES INVALIDAS')
                     driver.close()
                     driver.quit()

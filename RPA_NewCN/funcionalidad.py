@@ -6,7 +6,7 @@ from datetime import datetime, date, timedelta
 from time import sleep
 
 
-import  pyautogui  as pg
+# import  pyautogui  as pg
 import re
 
 def cargandoElemento(driver, elemento, atributo, valorAtributo, path = False, valContador = 60):
