@@ -156,15 +156,16 @@ def workflow():
                         driver.quit()
                     except: 
                         ###### Se cierra chrome en caso de que no se pueda por driver
-                        system("taskkill /f /im chrome.exe")
-                        system("taskkill /f /im chrome.exe")
-                        system("taskkill /f /im chrome.exe")
-                        system("taskkill /f /im chrome.exe")
-                        system("taskkill /f /im chrome.exe")
-                        system("taskkill /f /im chrome.exe")
-                        system("taskkill /f /im chrome.exe")
-                        system("taskkill /f /im chrome.exe")
-                        system("taskkill /f /im chrome.exe")
+                        # system("taskkill /f /im chrome.exe")
+                        # system("taskkill /f /im chrome.exe")
+                        # system("taskkill /f /im chrome.exe")
+                        # system("taskkill /f /im chrome.exe")
+                        # system("taskkill /f /im chrome.exe")
+                        # system("taskkill /f /im chrome.exe")
+                        # system("taskkill /f /im chrome.exe")
+                        # system("taskkill /f /im chrome.exe")
+                        # system("taskkill /f /im chrome.exe")
+                        pass
 
                     ##### Se Inicia la sesion para cuando resulto un usuario distinto
                     driver, status_logue, status_actualizacion = login(usuario, password)
