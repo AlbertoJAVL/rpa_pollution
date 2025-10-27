@@ -80,21 +80,16 @@ def workflow():
 
                 print(f"➡️ Procesando cuenta: {cuenta} con usuario: {usuario}")
 
-                try:
-                    ###### Se intenta cerrar chrome por medio del driver
-                    driver.quit()
-                except: pass
-
                 ##### Se Inicia la sesion para cuando resulto un usuario distinto
                 driver, status_logue, status_actualizacion = login(usuario, password)
                 if status_logue == False:
+                    try: driver.quit()
+                    except: pass
                     if 'Claves Invalidas' in status_actualizacion: 
                         response = ajusteCerrado(id, '-', f'Error: {status_actualizacion}')
                         send_msg(f'ERROR Claves Invalidad Cuenta: {cuenta} Usuario: {usuario} Password: {password}')
                     else: response = ajusteCerrado(id, '-', 'Generado')
                     print(response)
-                    try: driver.quit()
-                    except: pass
                     ultimo_usuario = None
                     driver = None
                     return False
@@ -162,6 +157,8 @@ def workflow():
 
                             driver, status_logue, status_actualizacion = login(usuario, password)
                             if status_logue == False:
+                                try: driver.quit()
+                                except: pass
 
                                 if 'Claves Invalidas' in status_actualizacion: 
                                     response = ajusteCerrado(id, '-', f'Error: {status_actualizacion}')
@@ -196,12 +193,16 @@ def workflow():
                         driver.quit()
 
             except Exception as e: 
+                try: driver.quit()
+                except: pass
                 ultimo_usuario = None
                 driver = None
                 print(e)
                 return False
     
     except Exception as e: 
+        try: driver.quit()
+        except: pass
         ultimo_usuario = None
         driver = None
         print(e)
